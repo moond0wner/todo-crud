@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/moond0wner/todo-nilchan/internal/core/domain"
 	core_errors "github.com/moond0wner/todo-nilchan/internal/core/errors"
+	core_postgres_pool "github.com/moond0wner/todo-nilchan/internal/core/repository/postgres/pool"
 )
 
 func (r *UsersRepository) GetUser(
@@ -38,7 +38,7 @@ func (r *UsersRepository) GetUser(
 	)
 
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.User{}, fmt.Errorf(
 				"user with id='%d': %w",
 				userID,

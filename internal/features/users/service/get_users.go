@@ -34,5 +34,5 @@ func (s *UsersService) GetUsers(
 	if err != nil {
 		return nil, fmt.Errorf("get users from repository: %w", err)
 	}
-	return users, err
+	return users, nil
 }

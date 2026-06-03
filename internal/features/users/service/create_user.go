@@ -7,12 +7,6 @@ import (
 	"github.com/moond0wner/todo-nilchan/internal/core/domain"
 )
 
-func NewUsersService(us UsersRepository) UsersService {
-	return UsersService{
-		usersRepository: us,
-	}
-}
-
 func (s *UsersService) CreateUser(
 	ctx context.Context,
 	user domain.User,

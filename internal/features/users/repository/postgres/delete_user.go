@@ -14,7 +14,8 @@ func (r *UsersRepository) DeleteUser(
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 	sqlQuery := `
-	DELETE FROM todoapp.users
+	DELETE 
+	FROM todoapp.users
 	WHERE id=$1;
 	`
 	cmdTag, err := r.pool.Exec(

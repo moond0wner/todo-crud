@@ -17,19 +17,23 @@ type UsersService interface {
 		ctx context.Context,
 		user domain.User,
 	) (domain.User, error)
+
 	GetUsers(
 		ctx context.Context,
 		limit *int,
 		offset *int,
 	) ([]domain.User, error)
+
 	GetUser(
 		ctx context.Context,
 		userID int,
 	) (domain.User, error)
+
 	DeleteUser(
 		ctx context.Context,
 		userID int,
 	) error
+
 	PatchUser(
 		ctx context.Context,
 		id int,
@@ -54,6 +58,10 @@ func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 			Method:  http.MethodGet,
 			Path:    "/users",
 			Handler: h.GetUsers,
+			// Example of usage Middleware on seperate Route
+			// Middleware: []core_http_middleware.Middleware{
+			// 	core_http_middleware.Dummy("get users middleware"),
+			// },
 		},
 		{
 			Method:  http.MethodGet,
