@@ -39,8 +39,8 @@ type UsersRepository interface {
 	) (domain.User, error)
 }
 
-func NewUsersService(us UsersRepository) UsersService {
-	return UsersService{
+func NewUsersService(us UsersRepository) *UsersService {
+	return &UsersService{
 		usersRepository: us,
 	}
 }

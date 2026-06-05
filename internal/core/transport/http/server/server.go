@@ -35,14 +35,9 @@ func (s *HTTPServer) RegisterAPIRouters(routers ...*APIVersionRouter) {
 	for _, router := range routers {
 		prefix := "/api/" + string(router.apiVersion)
 
-		h := core_http_middleware.ChainMiddleware(
-			router,
-			router.middleware...,
-		)
-
 		s.mux.Handle(
 			prefix+"/",
-			http.StripPrefix(prefix, h),
+			http.StripPrefix(prefix, router.WithMiddleware()),
 		)
 	}
 }
