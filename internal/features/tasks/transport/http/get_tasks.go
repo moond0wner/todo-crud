@@ -16,7 +16,7 @@ func (h *TasksHTTPHandler) GetTasks(rw http.ResponseWriter, r *http.Request) {
 	log := core_logger.FromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, rw)
 
-	userID, limit, offset, err := getUserIDLimitOffsetQueryParams(r)
+	queryParams, err := getUserIDLimitOffsetQueryParams(r)
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
@@ -27,9 +27,9 @@ func (h *TasksHTTPHandler) GetTasks(rw http.ResponseWriter, r *http.Request) {
 
 	tasks, err := h.tasksService.GetTasks(
 		ctx,
-		userID,
-		limit,
-		offset,
+		queryParams.userID,
+		queryParams.limit,
+		queryParams.offset,
 	)
 	if err != nil {
 		responseHandler.ErrorResponse(
@@ -46,7 +46,13 @@ func (h *TasksHTTPHandler) GetTasks(rw http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func getUserIDLimitOffsetQueryParams(r *http.Request) (*int, *int, *int, error) {
+type queryParams struct {
+	userID *int
+	limit  *int
+	offset *int
+}
+
+func getUserIDLimitOffsetQueryParams(r *http.Request) (queryParams, error) {
 	const (
 		limitQueryParamKey  = "limit"
 		offsetQueryParamKey = "offset"
@@ -55,16 +61,20 @@ func getUserIDLimitOffsetQueryParams(r *http.Request) (*int, *int, *int, error) 
 
 	limit, err := core_http_request.GetIntQueryParam(r, limitQueryParamKey)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("get 'limit' query param: %w:", err)
+		return queryParams{}, fmt.Errorf("get 'limit' query param: %w:", err)
 	}
 	offset, err := core_http_request.GetIntQueryParam(r, offsetQueryParamKey)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("get 'offset' query param: %w", err)
+		return queryParams{}, fmt.Errorf("get 'offset' query param: %w", err)
 	}
 	userID, err := core_http_request.GetIntQueryParam(r, UserIDKey)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("get `user_id` query param: %w", err)
+		return queryParams{}, fmt.Errorf("get `user_id` query param: %w", err)
 	}
 
-	return userID, limit, offset, nil
+	return queryParams{
+		userID: userID,
+		limit:  limit,
+		offset: offset,
+	}, nil
 }
