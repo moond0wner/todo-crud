@@ -60,10 +60,10 @@ todoapp-run:
 	go run cmd/todoapp/main.go
 
 todoapp-deploy:
-	docker compose up -d --build todoapp
+	@docker compose up -d --build todoapp
 
-todoapp-stop:
-	docker compose stop todoapp
+todoapp-undeploy:
+	@docker compose down todoapp
 
 logs-cleanup:
 	@read -p "Очистить все log файлы окружения? Опасность утери логов. [y/N]: " ans; \
