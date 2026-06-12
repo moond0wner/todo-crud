@@ -22,6 +22,9 @@ import (
 	users_postgres_repository "github.com/moond0wner/todo-nilchan/internal/features/users/repository/postgres"
 	users_service "github.com/moond0wner/todo-nilchan/internal/features/users/service"
 	users_transport_http "github.com/moond0wner/todo-nilchan/internal/features/users/transport/http"
+	web_filesystem_repository "github.com/moond0wner/todo-nilchan/internal/features/web/repository/file_system"
+	web_service "github.com/moond0wner/todo-nilchan/internal/features/web/service"
+	web_transport_http "github.com/moond0wner/todo-nilchan/internal/features/web/transport/http"
 	"go.uber.org/zap"
 
 	_ "github.com/moond0wner/todo-nilchan/docs"
@@ -60,7 +63,7 @@ func main() {
 	}
 	defer pool.Close()
 
-	logger.Debug("initalizing feature", zap.String("feature", "users"))
+	logger.Debug("initializing feature", zap.String("feature", "users"))
 	usersRepository := users_postgres_repository.NewUsersRepository(pool)
 	usersService := users_service.NewUsersService(usersRepository)
 	usersTransportHTTP := users_transport_http.NewUsersHTTPHandler(usersService)
@@ -74,6 +77,11 @@ func main() {
 	statisticsRepository := statistics_postgres_repository.NewStatisticsRepository(pool)
 	statisticsService := statistics_service.NewStatisticsService(statisticsRepository)
 	statisticsTransportHTTP := statistics_transport_http.NewStatisticsHTTPHandler(statisticsService)
+
+	logger.Debug("initializing feature", zap.String("feature", "web"))
+	webRepository := web_filesystem_repository.NewWebRepository()
+	webService := web_service.NewWebService(webRepository)
+	webTransportHTTP := web_transport_http.NewWebHTTPHandler(webService)
 
 	logger.Debug("initializain HTTP server")
 
@@ -100,6 +108,7 @@ func main() {
 	// apiVersionRouterV2.RegisterRoutes(usersTransportHTTP.Routes()...)
 
 	httpServer.RegisterAPIRouters(apiVersionRouterV1)
+	httpServer.RegisterRoutes(webTransportHTTP.Routes()...)
 	httpServer.RegisterSwagger()
 
 	if err := httpServer.Run(ctx); err != nil {
