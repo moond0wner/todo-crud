@@ -75,4 +75,12 @@ logs-cleanup:
 	fi;
 
 ps:
-	docker compose ps
+	@docker compose ps
+
+swagger-gen:
+	@docker compose run --rm --build swagger \
+		init \
+		-g cmd/todoapp/main.go \
+		-o docs \
+		--parseInternal \
+		--parseDependency
